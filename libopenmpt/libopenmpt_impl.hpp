@@ -154,6 +154,7 @@ protected:
 public:
 	void PushToCSoundFileLog( const std::string & text ) const;
 	void PushToCSoundFileLog( int loglevel, const std::string & text ) const;
+	::OpenMPT::CSoundFile& GetSoundFile() { return *m_sndFile; }
 protected:
 	std::string mod_string_to_utf8( const std::string & encoded ) const;
 	void apply_mixer_settings( std::int32_t samplerate, int channels );

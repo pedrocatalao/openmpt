@@ -26,6 +26,8 @@
 
 /*! \defgroup libopenmpt_ext_cpp libopenmpt_ext C++ */
 
+namespace OpenMPT { class CSoundFile; }
+
 namespace openmpt {
 
 /*! \addtogroup libopenmpt_ext_cpp
@@ -74,6 +76,16 @@ public:
 	  \return The interface object. This may be a nullptr if the extension was not found.
 	*/
 	LIBOPENMPT_CXX_API_MEMBER void * get_interface( const std::string & interface_id );
+
+	// Pattern editing
+	LIBOPENMPT_CXX_API_MEMBER int GetPatternNumRows( int pat ) const;
+	LIBOPENMPT_CXX_API_MEMBER void GetPatternCell( int pat, int row, int ch,
+	    uint8_t * note, uint8_t * instr, uint8_t * volcmd, uint8_t * vol,
+	    uint8_t * cmd, uint8_t * param ) const;
+	LIBOPENMPT_CXX_API_MEMBER void SetPatternCell( int pat, int row, int ch,
+	    uint8_t note, uint8_t instr, uint8_t volcmd, uint8_t vol,
+	    uint8_t cmd, uint8_t param );
+	LIBOPENMPT_CXX_API_MEMBER void ClearPatternCell( int pat, int row, int ch );
 
 }; // class module_ext
 

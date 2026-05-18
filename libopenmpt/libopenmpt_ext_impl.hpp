@@ -59,6 +59,8 @@ public:
 
 public:
 
+	::OpenMPT::CSoundFile& GetSoundFile() { return *m_sndFile; }
+
 	void * get_interface( const std::string & interface_id );
 
 	// pattern_vis

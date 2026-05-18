@@ -355,7 +355,46 @@ namespace openmpt {
 
 	/* add stuff here */
 
+} // namespace openmpt
 
+// ── Pattern editing (module_ext public API) ───────────────────────────────────
+
+namespace openmpt {
+
+int module_ext::GetPatternNumRows( int pat ) const {
+	return (int)ext_impl->GetSoundFile().Patterns[pat].GetNumRows();
+}
+
+void module_ext::GetPatternCell( int pat, int row, int ch,
+    uint8_t * note, uint8_t * instr, uint8_t * volcmd, uint8_t * vol,
+    uint8_t * cmd, uint8_t * param ) const {
+	const ::OpenMPT::ModCommand * c = ext_impl->GetSoundFile().Patterns[pat].GetpModCommand(row, ch);
+	if ( !c ) return;
+	if ( note   ) *note   = c->note;
+	if ( instr  ) *instr  = c->instr;
+	if ( volcmd ) *volcmd = (uint8_t)c->volcmd;
+	if ( vol    ) *vol    = c->vol;
+	if ( cmd    ) *cmd    = (uint8_t)c->command;
+	if ( param  ) *param  = c->param;
+}
+
+void module_ext::SetPatternCell( int pat, int row, int ch,
+    uint8_t note, uint8_t instr, uint8_t volcmd, uint8_t vol,
+    uint8_t cmd, uint8_t param ) {
+	::OpenMPT::ModCommand * c = ext_impl->GetSoundFile().Patterns[pat].GetpModCommand(row, ch);
+	if ( !c ) return;
+	c->note    = note;
+	c->instr   = instr;
+	c->volcmd  = (::OpenMPT::VolumeCommand)volcmd;
+	c->vol     = vol;
+	c->command = (::OpenMPT::EffectCommand)cmd;
+	c->param   = param;
+}
+
+void module_ext::ClearPatternCell( int pat, int row, int ch ) {
+	::OpenMPT::ModCommand * c = ext_impl->GetSoundFile().Patterns[pat].GetpModCommand(row, ch);
+	if ( c ) *c = ::OpenMPT::ModCommand{};
+}
 
 } // namespace openmpt
 

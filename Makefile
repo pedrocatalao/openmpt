@@ -1536,6 +1536,8 @@ endif
 
 
 CPPFLAGS += -DLIBOPENMPT_BUILD
+# BerryBeatz: enable file-save API in libopenmpt.a without enabling the full test suite.
+CPPFLAGS += -DBERRYBEATZ_FILESAVE
 
 
 COMMON_CXX_SOURCES += \
@@ -1565,6 +1567,7 @@ endif
 
 LIBOPENMPT_CXX_SOURCES += \
  $(SOUNDLIB_CXX_SOURCES) \
+ $(SOUNDLIB_TEST_CXX_SOURCES) \
  $(sort $(wildcard libopenmpt/*.cpp)) \
  
 

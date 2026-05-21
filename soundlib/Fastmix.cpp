@@ -23,6 +23,7 @@
 #include "plugins/PlugInterface.h"
 #include <cfloat>  // For FLT_EPSILON
 #include <algorithm>
+#include <cstring>
 
 
 OPENMPT_NAMESPACE_BEGIN
@@ -309,13 +310,52 @@ void CSoundFile::CreateStereoMix(int count)
 	if(m_MixerSettings.gnChannels > 2)
 		StereoFill(MixRearBuffer, count, m_surroundROfsVol, m_surroundLOfsVol);
 
+#ifdef BERRYBEATZ_FILESAVE
+	if(m_bbCaptureEnabled && m_bbNumChannels > 0)
+	{
+		std::memset(m_bbChannelBuf, 0, m_bbNumChannels * MIXBUFFERSIZE * 2 * sizeof(mixsample_t));
+		m_bbGlobalVolScale = m_PlayConfig.getGlobalVolumeAppliesToMaster()
+		                     ? static_cast<float>(m_PlayState.m_nGlobalVolume) / static_cast<float>(MAX_GLOBAL_VOLUME)
+		                     : 1.0f;
+	}
+#endif
+
 	// Channels that are actually mixed and not skipped (because they are paused or muted)
 	CHANNELINDEX numChannelsMixed = 0;
 
 	for(uint32 nChn = 0; nChn < m_nMixChannels; nChn++)
 	{
-		if(MixChannel(count, m_PlayState.Chn[m_PlayState.ChnMix[nChn]], m_PlayState.ChnMix[nChn], numChannelsMixed < m_MixerSettings.m_nMaxMixChannels))
+		const CHANNELINDEX absIdx = m_PlayState.ChnMix[nChn];
+
+#ifdef BERRYBEATZ_FILESAVE
+		int bbTarget = -1;
+		mixsample_t bbSnap[MIXBUFFERSIZE * 2];
+		if(m_bbCaptureEnabled && m_bbNumChannels > 0)
+		{
+			if(absIdx < m_bbNumChannels)
+				bbTarget = (int)absIdx;
+			else
+			{
+				const CHANNELINDEX master = m_PlayState.Chn[absIdx].nMasterChn;
+				if(master > 0 && master <= m_bbNumChannels)
+					bbTarget = (int)(master - 1);
+			}
+			if(bbTarget >= 0)
+				std::memcpy(bbSnap, MixSoundBuffer, count * 2 * sizeof(mixsample_t));
+		}
+#endif
+
+		if(MixChannel(count, m_PlayState.Chn[absIdx], absIdx, numChannelsMixed < m_MixerSettings.m_nMaxMixChannels))
 			numChannelsMixed++;
+
+#ifdef BERRYBEATZ_FILESAVE
+		if(m_bbCaptureEnabled && bbTarget >= 0)
+		{
+			mixsample_t *dest = m_bbChannelBuf + bbTarget * MIXBUFFERSIZE * 2;
+			for(int s = 0; s < count * 2; ++s)
+				dest[s] += MixSoundBuffer[s] - bbSnap[s];
+		}
+#endif
 	}
 	m_nMixStat = std::max(m_nMixStat, numChannelsMixed);
 }

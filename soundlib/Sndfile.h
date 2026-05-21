@@ -437,6 +437,17 @@ private:
 	// Interleaved Front Mix Buffer (Also room for interleaved rear mix)
 	mixsample_t MixSoundBuffer[MIXBUFFERSIZE * 4];
 	mixsample_t MixRearBuffer[MIXBUFFERSIZE * 2];
+
+#ifdef BERRYBEATZ_FILESAVE
+public:
+	// Per-channel audio capture (BerryBeatz oscilloscope)
+	static constexpr CHANNELINDEX BB_MAX_CHANNELS = 64;
+	mixsample_t m_bbChannelBuf[BB_MAX_CHANNELS * MIXBUFFERSIZE * 2]{};
+	bool        m_bbCaptureEnabled = false;
+	CHANNELINDEX m_bbNumChannels   = 0;
+	float       m_bbGlobalVolScale = 1.0f; // global-volume factor to apply to captured samples
+private:
+#endif
 	// Non-interleaved plugin processing buffer
 	float MixFloatBuffer[2][MIXBUFFERSIZE];
 	mixsample_t MixInputBuffer[NUMMIXINPUTBUFFERS][MIXBUFFERSIZE];

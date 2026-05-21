@@ -158,6 +158,9 @@
 #if defined(LIBOPENMPT_BUILD_TEST)
 #define ENABLE_TESTS
 #define MPT_ENABLE_PLAYBACK_TRACE
+#elif defined(BERRYBEATZ_FILESAVE)
+// BerryBeatz: enable Save* methods without enabling the full test suite.
+// soundfile_write/ objects (WAVWriter etc.) must be compiled separately.
 #else
 #define MODPLUG_NO_FILESAVE
 #endif

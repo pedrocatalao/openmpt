@@ -75,7 +75,7 @@ void OPL::Mix(int32 *target, size_t count, uint32 volumeFactorQ16)
 		{
 			const int16_t *snap = m_opl->BbGetChanSnap();
 			for(int v = 0; v < OPL_CHANNELS; ++v)
-				m_bbChanFrames[v][m_bbFrameCount] = static_cast<float>(snap[v]);
+				m_bbChanFrames[v][m_bbFrameCount] = static_cast<float>(snap[v]) * static_cast<float>(factor);
 			++m_bbFrameCount;
 		}
 #endif

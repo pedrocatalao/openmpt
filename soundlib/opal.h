@@ -178,6 +178,9 @@ class Opal {
         void                SetSampleRate(int sample_rate);
         void                Port(uint16_t reg_num, uint8_t val);
         void                Sample(int16_t *left, int16_t *right);
+#ifdef BERRYBEATZ_FILESAVE
+        const int16_t *     BbGetChanSnap() const { return m_bbChanSnap; }
+#endif
 
     protected:
         void                Init(int sample_rate);
@@ -202,6 +205,9 @@ class Opal {
         static const uint16_t   RateTables[4][8];
         static const uint16_t   ExpTable[256];
         static const uint16_t   LogSinTable[256];
+#ifdef BERRYBEATZ_FILESAVE
+        int16_t             m_bbChanSnap[NumChannels]{};
+#endif
 };
 //--------------------------------------------------------------------------------------------------
 const uint16_t Opal::RateTables[4][8] = {
@@ -596,7 +602,9 @@ void Opal::Output(int16_t &left, int16_t &right) {
 
         int16_t chanleft, chanright;
         Chan[i].Output(chanleft, chanright);
-
+#ifdef BERRYBEATZ_FILESAVE
+        m_bbChanSnap[i] = chanleft;
+#endif
         leftmix += chanleft;
         rightmix += chanright;
     }

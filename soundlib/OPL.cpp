@@ -60,6 +60,9 @@ void OPL::Mix(int32 *target, size_t count, uint32 volumeFactorQ16)
 
 	// This factor causes a sample voice to be more or less as loud as an OPL voice
 	const int32 factor = Util::muldiv_unsigned(volumeFactorQ16, 6169, (1 << 16));
+#ifdef BERRYBEATZ_FILESAVE
+	m_bbFrameCount = 0;
+#endif
 	while(count--)
 	{
 		int16 l, r;
@@ -67,8 +70,26 @@ void OPL::Mix(int32 *target, size_t count, uint32 volumeFactorQ16)
 		target[0] += l * factor;
 		target[1] += r * factor;
 		target += 2;
+#ifdef BERRYBEATZ_FILESAVE
+		if(m_bbCaptureEnabled && m_bbFrameCount < BB_OPL_MAX_FRAMES)
+		{
+			const int16_t *snap = m_opl->BbGetChanSnap();
+			for(int v = 0; v < OPL_CHANNELS; ++v)
+				m_bbChanFrames[v][m_bbFrameCount] = static_cast<float>(snap[v]);
+			++m_bbFrameCount;
+		}
+#endif
 	}
 }
+
+#ifdef BERRYBEATZ_FILESAVE
+void OPL::BbSetupCapture(bool enable, int nVoices)
+{
+	m_bbCaptureEnabled = enable;
+	m_bbCapVoices = std::min(nVoices, (int)OPL_CHANNELS);
+	m_bbFrameCount = 0;
+}
+#endif
 
 
 OPL::Register OPL::ChannelToRegister(uint8 oplCh)

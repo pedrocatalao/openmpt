@@ -87,6 +87,16 @@ public:
 	void Initialize(uint32 sampleRate);
 	void Mix(int32 *buffer, size_t count, uint32 volumeFactorQ16);
 
+#ifdef BERRYBEATZ_FILESAVE
+	static constexpr int BB_OPL_VOICES     = 18;   // OPL3 voice count
+	static constexpr int BB_OPL_MAX_FRAMES = 512;  // must be >= MIXBUFFERSIZE
+
+	void         BbSetupCapture(bool enable, int nVoices);
+	int          BbGetFrameCount()                    const noexcept { return m_bbFrameCount; }
+	const float* BbGetChanFrames(int voice)           const noexcept { return m_bbChanFrames[voice]; }
+	CHANNELINDEX BbGetTrackerChan(int voice)          const noexcept { return m_OPLtoChan[voice]; }
+#endif
+
 	void NoteOff(CHANNELINDEX c);
 	void NoteCut(CHANNELINDEX c, bool unassign = true);
 	void Frequency(CHANNELINDEX c, uint32 milliHertz, bool keyOff, bool beatingOscillators);
@@ -130,6 +140,13 @@ protected:
 	std::array<OPLPatch, OPL_CHANNELS> m_Patches;
 
 	bool m_isActive = false;
+
+#ifdef BERRYBEATZ_FILESAVE
+	bool  m_bbCaptureEnabled{false};
+	int   m_bbCapVoices{0};
+	int   m_bbFrameCount{0};
+	float m_bbChanFrames[OPL_CHANNELS][BB_OPL_MAX_FRAMES]{};
+#endif
 };
 
 OPENMPT_NAMESPACE_END

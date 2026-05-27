@@ -603,7 +603,7 @@ void Opal::Output(int16_t &left, int16_t &right) {
         int16_t chanleft, chanright;
         Chan[i].Output(chanleft, chanright);
 #ifdef BERRYBEATZ_FILESAVE
-        m_bbChanSnap[i] = chanleft;
+        m_bbChanSnap[i] = chanleft != 0 ? chanleft : chanright;
 #endif
         leftmix += chanleft;
         rightmix += chanright;

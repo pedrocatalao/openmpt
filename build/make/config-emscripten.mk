@@ -130,6 +130,10 @@ CXXFLAGS +=
 CFLAGS   += 
 LDFLAGS  += -s WASM=0 -s LEGACY_VM_SUPPORT=1
 
+# Runtime helpers the chiptune2.js loader relies on (newer emscripten strips
+# these by default; the old prebuilt lib had them).
+LDFLAGS  += -s EXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,writeAsciiToMemory,HEAPU8,HEAPF32
+
 # work-around <https://github.com/emscripten-core/emscripten/issues/17897>.
 CXXFLAGS += -fno-inline-functions
 CFLAGS   += -fno-inline-functions
